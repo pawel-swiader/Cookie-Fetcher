@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cookie Fetcher</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  </head>
+  <body>
+    <div class="app-container">
+        <div class="response-container">
+            <div id="textResponse" class="detail-response-container"></div>
+            <div id="cookieResponse" class="detail-response-container"></div>
+        </div>
+        <div class="expire-animation"></div>
+        <div class="button-container">
+            <form id="myForm">
+                <button type="submit">GET "/cookie" <br /><br /> http://127.0.0.1:3000</button>
+              </form>
+            <form id="mySecondForm">
+                <button type="submit">GET "/cookie" <br /><br /> http://localhost:3000</button>
+            </form>
+        </div>
+
+        <script>
+            const responseDiv = document.getElementById("textResponse");
+            const cookieDiv = document.getElementById("cookieResponse");
+            const expireAnimation = document.querySelector(".expire-animation");
+            const form1Button = document.querySelector("#myForm button");
+            const form2Button = document.querySelector("#mySecondForm button");
+  
+            const handleSubmit = (url) => {
+              fetch(url, {
+                credentials: "include",
+              })
+                .then((response) => response.text())
+                .then((data) => {
+                  if (data) {
+                    responseDiv.textContent = data;
+                  } else {
+                    responseDiv.style.color = "orange";
+                    responseDiv.textContent = "No response :(";
+                  }
+  
+                  const cookies = document.cookie;
+                  if (cookies) {
+                    expireAnimation.classList.remove("start");
+                    void expireAnimation.offsetWidth;
+                    expireAnimation.classList.add("start");
+                    cookieDiv.style.color = "white";
+                    cookieDiv.textContent = `Cookies: ${cookies}`;
+
+                    form1Button.disabled = true;
+                    form2Button.disabled = true;
+                    form1Button.classList.add("disabled");
+                    form2Button.classList.add("disabled");
+                    
+                    setTimeout(() => {
+                      form1Button.disabled = false;
+                      form2Button.disabled = false;
+                    form1Button.classList.remove("disabled");
+                    form2Button.classList.remove("disabled");
+
+                    }, 5000)
+                  } else {
+                    expireAnimation.classList.remove("start");
+                    cookieDiv.style.color = "orange";
+                    cookieDiv.textContent = `No cookies :(`;
+                  }
+                });
+            };
+  
+            document.getElementById("myForm").addEventListener("submit", (e) => {
+              e.preventDefault();
+              handleSubmit("http://127.0.0.1:3000/cookie");
+            });
+  
+            document.getElementById("mySecondForm").addEventListener("submit", (e) => {
+              e.preventDefault();
+              handleSubmit("http://localhost:3000/cookie");
+            });
+          </script>
+  </body>
+</html>
